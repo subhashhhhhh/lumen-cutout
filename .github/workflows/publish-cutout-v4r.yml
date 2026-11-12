@@ -1,0 +1,52 @@
+name: Publish Lumen Cutout (final, 8-bit)
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: The final model's name in the releases
+        default: birefnet_v4r_snap_12000
+      sha256:
+        description: Expected SHA-256 of <model>_1024_a8w8.tflite (the source 8-bit model)
+        default: fd14395fb39086a7299767108c3395248c90f913e5bca9f091c80ebf286b6eb3
+permissions:
+  contents: read
+jobs:
+  # Built and uploaded here, not from the owner's connection: ~3.2 GB goes up quickly.
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install --quiet huggingface_hub
+      - name: Model, weights, card and example
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          m="${{ inputs.model }}"
+          mkdir -p hf/pytorch hf/npu in
+          gh release download inputs --dir in -p "${m}_1024_a8w8.tflite" -p "${m}.pt"
+          echo "${{ inputs.sha256 }}  in/${m}_1024_a8w8.tflite" | sha256sum -c
+          cp "in/${m}_1024_a8w8.tflite" hf/lumen_cutout_1024_int8.tflite
+          cp "in/${m}.pt" hf/pytorch/lumen_cutout.pt
+          cp cutout/README.md hf/README.md
+          cp cutout/example.py hf/example.py
+          cp cutout/LICENSE hf/LICENSE
+      - name: Compiled files, one folder per chip
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          m="${{ inputs.model }}"
+          for tag in $(gh release list --limit 200 --json tagName -q '.[].tagName' | grep '^compiled-SM'); do
+            chip="${tag#compiled-}"
+            gh release download "$tag" --dir "in/$chip" -p "${m}_1024_a8w8_Qualcomm_${chip}_apply_plugin.tflite" || continue
+            mkdir -p "hf/npu/$chip"
+            mv "in/$chip/${m}_1024_a8w8_Qualcomm_${chip}_apply_plugin.tflite" "hf/npu/$chip/lumen_cutout_1024_int8_${chip}.tflite"
+          done
+          n=$(ls hf/npu | wc -l); echo "chips: $n"; test "$n" -eq 42
+          du -sh hf; find hf -maxdepth 1 -type f
+      - name: Upload to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: hf upload subhashhhhhh/lumen-cutout hf . --commit-message "Lumen Cutout final (v4r, 8-bit, 42 chips) (run ${{ github.run_id }})"
