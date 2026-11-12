@@ -3,7 +3,7 @@
 v3's float student (7x7 plain convolutions at dilation 2) loses badly when every tensor is rounded to
 8 bits after training (median IoU 0.920, worst 0.006 vs the float model). Here the student trains
 *through* that rounding: the NPU graph is captured with torch.export and gets 8-bit fake
-quantization on every float tensor and every conv/linear weight (lumen-npu-build convert/qat.py),
+quantization on every float tensor and every conv/linear weight (convert/qat.py of this repository),
 then it learns to match the original BiRefNet-lite's masks anyway. One change against v3, nothing
 else: same COCO data, same loss (BCE + L1, edge weight 1 + 4 x the teacher's 7x7 local range), EMA.
 
@@ -23,7 +23,7 @@ NPB = os.environ.get("LUMEN_NPB", "/tmp/npb")
 if "LOCAL_RANK" not in os.environ and not SMOKE:
     subprocess.run([sys.executable, "-m", "pip", "install", "-q", "timm", "einops", "kornia"], check=False)
     if not os.path.isdir(NPB):
-        subprocess.run(["git", "clone", "-q", "--depth", "1", "https://github.com/subhashhhhhh/lumen-npu-build", NPB], check=True)
+        subprocess.run(["git", "clone", "-q", "--depth", "1", "https://github.com/subhashhhhhh/lumen-cutout", NPB], check=True)
     import torch
     n = torch.cuda.device_count()
     if n > 1:
