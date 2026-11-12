@@ -1,4 +1,4 @@
-# lumen-npu-build
+# Lumen Cutout
 
 Conversion, 8-bit quantization and ahead-of-time NPU compilation for the on-device models of
 [Lumen](https://github.com/subhashhhhhh/Lumen), a local-first Android gallery. Most of it is
@@ -40,7 +40,7 @@ Everything runs on GitHub Actions; files move through releases.
    one job per chip, into a `compiled-<chip>` release (and optionally the Hugging Face repo).
 
 The final Lumen Cutout is `birefnet_v4r_snap_12000`: its PyTorch weights (`.pt`), float and 8-bit models are in the
-[`inputs`](https://github.com/subhashhhhhh/lumen-npu-build/releases/tag/inputs) release, and the compiled files are
+[`inputs`](https://github.com/subhashhhhhh/lumen-cutout/releases/tag/inputs) release, and the compiled files are
 `birefnet_v4r_snap_12000_1024_a8w8_Qualcomm_<chip>_apply_plugin.tflite` in each `compiled-<chip>` release. The other
 files in the releases are the experiments of the paper (earlier rounds, probes and ablations).
 
@@ -51,7 +51,7 @@ From its PyTorch weights to a compiled file for one chip, on your machine:
 ```bash
 # float LiteRT: mask 1024, plain 7x7 convolutions at dilation 2, per-head attention, backbone 640, final graph
 python convert/birefnet_lite.py birefnet_v4r_snap_12000_1024.tflite 1024 \
-  https://github.com/subhashhhhhh/lumen-npu-build/releases/download/inputs/birefnet_v4r_snap_12000.pt \
+  https://github.com/subhashhhhhh/lumen-cutout/releases/download/inputs/birefnet_v4r_snap_12000.pt \
   2 heads 640 tail two,slim,global4,nohalf
 python convert/int8.py birefnet_v4r_snap_12000_1024.tflite birefnet_v4r_snap_12000_1024_a8w8.tflite a8w8 <COCO val2017 dir> 64
 python compile.py birefnet_v4r_snap_12000_1024_a8w8.tflite SM7450 compiled/   # or any chip of compile.yml

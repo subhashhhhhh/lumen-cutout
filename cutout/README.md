@@ -33,7 +33,7 @@ and its full-resolution activations don't fit the NPU's on-chip memory. Lumen Cu
 exactly, changes the architecture where it can't, and gets the accuracy back with quantization-aware distillation
 through the exact NPU graph.
 
-📄 **Paper:** [*High-Resolution Subject Segmentation Entirely on Mobile NPUs: Exact Graph Rewrites, Split Resolution and 8-bit Distillation*](https://doi.org/10.5281/zenodo.24152780) (Zenodo, 2026) · 🛠️ **Code:** [lumen-npu-build](https://github.com/subhashhhhhh/lumen-npu-build)
+📄 **Paper:** [*High-Resolution Subject Segmentation Entirely on Mobile NPUs: Exact Graph Rewrites, Split Resolution and 8-bit Distillation*](https://doi.org/10.5281/zenodo.24152780) (Zenodo, 2026) · 🛠️ **Code:** [GitHub](https://github.com/subhashhhhhh/lumen-cutout)
 
 ## Results
 
@@ -72,7 +72,7 @@ On the same phones the original model runs out of memory at 1024 pixels; at 512 
 |---|---|
 | `lumen_cutout_1024_int8.tflite` | The model, all 8-bit (activations and weights), 61 MB. Runs anywhere LiteRT does; compile it for your chip, or take a file from `npu/`. |
 | `npu/<chip>/lumen_cutout_1024_int8_<chip>.tflite` | Compiled ahead of time for 42 Snapdragon chips (`SM7450` is the 7 Gen 1, `SM8850` the 8 Elite Gen 5, …). Each is one NPU partition: no layer falls back to the CPU. |
-| `pytorch/lumen_cutout.pt` | The weights of the final training round (float16), for PyTorch. [`convert/birefnet_lite.py`](https://github.com/subhashhhhhh/lumen-npu-build/blob/main/convert/birefnet_lite.py) builds the model from them; the command is in the [code's README](https://github.com/subhashhhhhh/lumen-npu-build#rebuild-the-final-model). |
+| `pytorch/lumen_cutout.pt` | The weights of the final training round (float16), for PyTorch. [`convert/birefnet_lite.py`](https://github.com/subhashhhhhh/lumen-cutout/blob/main/convert/birefnet_lite.py) builds the model from them; the command is in the [code's README](https://github.com/subhashhhhhh/lumen-cutout#rebuild-the-final-model). |
 | `example.py` | A mask for one photo with LiteRT, in 30 lines. |
 | `cutout_512.tflite`, `pytorch/decoder_v2.pt` | Legacy: the earlier 512-pixel float model (v2, for GPUs) and its weights, kept for older versions of Lumen. |
 

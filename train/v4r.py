@@ -17,11 +17,11 @@ import glob, os, random, subprocess, sys, time, copy, urllib.request
 SMOKE = os.environ.get("LUMEN_SMOKE") == "1"
 OUT = os.environ.get("LUMEN_OUT", "/kaggle/working")
 NPB = os.environ.get("LUMEN_NPB", "/tmp/npb")
-START_URL = "https://github.com/subhashhhhhh/lumen-npu-build/releases/download/inputs/birefnet_qat2_snap_8000.pt"
+START_URL = "https://github.com/subhashhhhhh/lumen-cutout/releases/download/inputs/birefnet_qat2_snap_8000.pt"
 if "LOCAL_RANK" not in os.environ and not SMOKE:
     subprocess.run([sys.executable, "-m", "pip", "install", "-q", "timm", "einops", "kornia"], check=False)
     if not os.path.isdir(NPB):
-        subprocess.run(["git", "clone", "-q", "--depth", "1", "https://github.com/subhashhhhhh/lumen-npu-build", NPB], check=True)
+        subprocess.run(["git", "clone", "-q", "--depth", "1", "https://github.com/subhashhhhhh/lumen-cutout", NPB], check=True)
     if not os.path.exists("/tmp/start.pt"):
         urllib.request.urlretrieve(START_URL, "/tmp/start.pt")
     import torch

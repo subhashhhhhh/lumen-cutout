@@ -20,7 +20,7 @@ NPB = os.environ.get("LUMEN_NPB", "/tmp/npb")
 if "LOCAL_RANK" not in os.environ and not SMOKE:
     subprocess.run([sys.executable, "-m", "pip", "install", "-q", "timm", "einops", "kornia"], check=False)
     if not os.path.isdir(NPB):
-        subprocess.run(["git", "clone", "-q", "--depth", "1", "https://github.com/subhashhhhhh/lumen-npu-build", NPB], check=True)
+        subprocess.run(["git", "clone", "-q", "--depth", "1", "https://github.com/subhashhhhhh/lumen-cutout", NPB], check=True)
     import torch
     n = torch.cuda.device_count()
     if n > 1:
